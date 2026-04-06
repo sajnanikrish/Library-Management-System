@@ -41,6 +41,9 @@ def create_tables():
                 password TEXT NOT NULL,
                 role TEXT CHECK(role IN ('admin','student')) NOT NULL
                 )""")
+    
+    cur.execute("""CREATE TABLE IF NOT EXISTS fine_history(
+                )""")
     conn.commit()
     conn.close()
 

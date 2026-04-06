@@ -53,7 +53,6 @@ class Start_app:
             ('Home', "#71570A" , self._home_page),
             ('My Profile', "#045640", self._my_profile),
             ('Search Book', "#7b1206", self._search_book),
-            ('Fine Details', '#335c67', self._fine_details),
             ('Request Book', "#900d71", self._request_book),
             ('Logout', "#0b3583", self.on_close)
         ]
@@ -61,7 +60,7 @@ class Start_app:
         for i, (text, color, func) in enumerate(buttons_config):
             btn = Button(button_frame, text=text, bg=color, fg='#E4D6C3', height=2, width=20, command=func,
                         activebackground='#1B263B', cursor='hand2', font=('Arial', 19, 'bold'))
-            btn.pack(padx=12, pady=15)
+            btn.pack(padx=12, pady=25)
 
     def _request_book(self):
         dialog = Toplevel(self.window)
@@ -93,8 +92,7 @@ class Start_app:
         request_btn = Button(dialog, text='Send Request', font=('Arial', 15, 'bold'), padx=2, pady=2, fg='#f7e1d7', bg='#1B263B', activebackground='#1B263B')
         request_btn.grid(row=5, column=0, pady=20, padx=60)
 
-    def _fine_details(self):
-        pass
+
 
     def _search_book(self):
         dialog = Toplevel(self.window)
