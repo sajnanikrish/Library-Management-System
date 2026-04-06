@@ -1,0 +1,35 @@
+Library Management Project 
+
+Functions added till now :- 
+Add Book
+View books
+Update books (Quantity)
+Issue Book
+Return Book
+View Issued Books 
+
+
+
+
+
+Functions to add :-
+GUI is not done for now. 
+
+Search Book Function
+Fine Calculation(Penalty)
+Different section(genre) books
+Login System (Admin and student) - Single id for Admin and different tables or storage for students 
+Borrow History per user (like max 3 books per user)
+Dashboard (Refer Perplexity chat for features)
+
+
+QR for Issue
+
+DS/ML - Can be add later like book suggestion by (subject, section, genre, etc.)
+
+
+
+
+Error:-
+
+Messagebox for wrong book Calculation fine (Return book)
