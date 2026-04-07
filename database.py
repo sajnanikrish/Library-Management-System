@@ -42,10 +42,23 @@ def create_tables():
                 role TEXT CHECK(role IN ('admin','student')) NOT NULL
                 )""")
     
-    cur.execute("""CREATE TABLE IF NOT EXISTS fine_history(
+    cur.execute("""CREATE TABLE IF NOT EXISTS issue_history(
+                book_id INTEGER,
+                enrol INTEGER,
+                stud_name TEXT NOT NULL,
+                book_name TEXT NOT NULL,
+                book_author TEXT NOT NULL,
+                issue_date TEXT,
+                return_date TEXT,
+                fine INTEGER
                 )""")
+    
+    # cur.execute("Select * from issue_history")
+    # result = cur.fetchall()
+    # print(result)
     conn.commit()
     conn.close()
+    
 
 
 def add_user(user_name, enrollment, password, role):
@@ -309,7 +322,7 @@ def issue_book(book_id,stud_name,stud_enrol, book_name, book_author,iss_date,iss
         due_date = current_date + timedelta(days = int(iss_days))
 
         cur.execute("INSERT INTO issued_books (book_id,stud_name,stud_enrol, book_name, book_author,iss_date,iss_days, due_date) VALUES (?,?,?,?,?,?,?,?)",
-                    (book_id,stud_name,stud_enrol_int, book_name, book_author,iss_date,iss_days,due_date)
+                    (book_id,stud_name,stud_enrol_int, book_name, book_author,iss_date.strftime(),iss_days,due_date)
         )
 
         cur.execute("UPDATE books SET quant = quant - 1 WHERE book_id = ?",
@@ -341,7 +354,7 @@ def book_quantity(book_id):
     return result
 
 
-def return_book(book_id, stud_enrol):
+def return_book(book_id, stud_enrol, stud_name, book_name, book_author, fine):
     conn = connect()
     cur = conn.cursor()
 
@@ -351,6 +364,16 @@ def return_book(book_id, stud_enrol):
     if result is None:
         conn.close()
         return False
+    
+    issued_date = get_issued_date(book_id, stud_name, stud_enrol)
+    return_date = date.today()
+
+    split_fine = fine.split(" ")
+    fine_amount = int(split_fine[0])
+
+    cur.execute("""INSERT INTO issue_history (book_id, enrol, stud_name, book_name, book_author, issue_date, return_date, fine) VALUES (?,?,?,?,?,?,?,?)""",
+                (book_id,stud_enrol,stud_name,book_name,book_author,issued_date[0],return_date,fine_amount)
+    )
     
     cur.execute("DELETE FROM issued_books WHERE book_id = ? AND stud_enrol = ?",
                 (book_id,stud_enrol)
@@ -364,6 +387,18 @@ def return_book(book_id, stud_enrol):
     conn.close()
     return True
 
+
+def get_issued_date(book_id, stud_name, stud_enrol):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("SELECT iss_date FROM issued_books WHERE book_id = ? AND stud_name = ? and stud_enrol = ?",
+                (book_id, stud_name, stud_enrol))
+    data = cur.fetchone()
+    conn.close()
+
+    return data 
+
 def get_issued_books():
     conn = connect()
     cur = conn.cursor()
@@ -373,6 +408,22 @@ def get_issued_books():
     conn.close()
 
     return data
+
+def issue_history(stud_enrol,stud_name):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("""SELECT book_id, book_name, book_author, issue_date, return_date, fine FROM issue_history WHERE enrol = ? AND stud_name = ?""",
+                (stud_enrol, stud_name)
+    )
+
+    result = cur.fetchall()
+    conn.close()
+
+    if result:
+        return result
+    else:
+        return None
 
 
 def calculate_fine(book_id, stud_name,stud_enroll): 

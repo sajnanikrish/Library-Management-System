@@ -99,7 +99,7 @@ class ReturnBookDialog:
                 messagebox.showerror('Error', 'Calculate Fine Properly!')
                 return
 
-            check = database.return_book(book_id,stud_enrol)
+            check = database.return_book(book_id,stud_enrol, stud_name, book_title, book_author, fine)
             if check == False:
                 # dialog.destroy()
                 messagebox.showerror('Error', 'No matching record found! Please check the details and try again.')

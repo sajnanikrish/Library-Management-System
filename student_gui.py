@@ -144,12 +144,13 @@ class Start_app:
 
     def _home_page(self):
         self.books_table.tkraise()
-        
-        
+
+
     def _my_profile(self):
         self.profile_frame.tkraise()
 
-
+    def _fine_details(self):
+        pass
     def _set_books(self):
 
         self.right_frame = Frame(self.main_container)
@@ -190,7 +191,7 @@ class Start_app:
 
         issued_label = Label(issued_header, text='Your Current Issued Books', bg='#1B263B', fg='#E4D6C3',font=('Arial', 14, 'bold'), anchor='center')
         issued_label.pack()
-        issued_label.pack_propagate(False)
+        
 
         self.books_table.tkraise()
 
@@ -199,7 +200,7 @@ class Start_app:
         self.upper_frame.pack(fill='x')
         self.upper_frame.pack_propagate(False)
 
-        name_label = Label(self.upper_frame, text=f"Student Name          : {self.user_name.title()}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        name_label = Label(self.upper_frame, text=f"Student Name           : {self.user_name.title()}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
         name_label.grid(row=0, column=0 , sticky='w', padx=10, pady= 5)
 
         enrol_label = Label(self.upper_frame, text=f"Student Enrollment  : {self.enrollment}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
@@ -208,6 +209,57 @@ class Start_app:
         id_label = Label(self.upper_frame, text= f"Membership ID         : LIB-{self.user_id}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
         id_label.grid(row=2, column=0 , sticky='w', padx=10, pady= 3) 
 
+        self.lower_frame = Frame(self.profile_frame, bg="#E4D6C3", height=200)
+        self.lower_frame.pack(fill='x', pady=75)
+        self.lower_frame.pack_propagate(False)
+
+        issue_header = Frame(self.lower_frame, bg='#1B263B', height=25)
+        issue_header.pack(side='top', fill='x')
+        issue_header.pack_propagate(False)
+
+        issue_label = Label(issue_header, text='Your Book Issue History', bg='#1B263B', fg='#E4D6C3',font=('Arial', 14, 'bold'), anchor='center')
+        issue_label.pack()
+
+        history_scroll = Scrollbar(self.lower_frame, orient='vertical')
+        history_scroll.pack(side='right', fill='y')
+
+
+        self.history_data = ttk.Treeview(self.lower_frame, columns=("Book ID", "Book Name", "Book Author", "Issue Date", "Return Date", "Fine"),
+                                         show='headings', height=5, style='Treeview')
+        
+        self.history_data.heading('Book ID', text='Book ID', anchor='center')
+        self.history_data.heading('Book Name', text='Book Title', anchor='w')
+        self.history_data.heading('Book Author', text='Book Author', anchor='w')
+        self.history_data.heading('Issue Date', text= 'Issued Date', anchor='w')
+        self.history_data.heading('Return Date', text='Return Date', anchor='w')
+        self.history_data.heading('Fine', text='Fine Amount', anchor='w')
+        self.history_data.column('Book ID', width=50)
+        self.history_data.column('Book Name', width=220)
+        self.history_data.column('Book Author', width=220)
+        self.history_data.column('Issue Date', width=100)
+        self.history_data.column('Return Date', width=100)
+        self.history_data.column('Fine', width=150)
+
+        self.history_data.pack(fill='both', expand=True)
+        self.history_data.configure(yscrollcommand=history_scroll.set)
+        history_scroll.config(command=self.history_data.yview)
+
+        book_history = database.issue_history(self.enrollment, self.user_name)
+        
+
+        if book_history is None:
+            self.history_data.insert('', 'end', values = ('','','No Books Issued','','',''))
+            self.history_data.config(selectmode='none')
+
+        else:
+
+            self.history_data.tag_configure('oddrow', background='#DDD0BE')
+            self.history_data.tag_configure('evenrow', background='#E4D6C3')
+
+            for index,i in enumerate(book_history):
+                tag = 'evenrow' if index % 2 == 0 else 'oddrow'
+                self.history_data.insert('', 'end', values=i, tags=(tag,))
+                
 
     def _insert_book_data(self):
         self.book_tree = ttk.Treeview(self.avail_books, columns=("Book ID", "Book Title", "Book Author", "Quantity"), 
@@ -228,7 +280,7 @@ class Start_app:
         book_data = database.get_books()
         for i in book_data:
             self.book_tree.insert('', 'end', values=i)
-            # self.tree_styling()
+            
         
 
     def _issued_book_data(self):

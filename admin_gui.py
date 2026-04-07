@@ -121,8 +121,13 @@ class Start_app:
         self.avail_scroll.config(command=self.book_tree.yview)
 
         book_data = database.get_books()
-        for i in book_data:
-            self.book_tree.insert('', 'end', values=i)
+    
+        self.book_tree.tag_configure('oddrow', background='#DDD0BE')
+        self.book_tree.tag_configure('evenrow', background='#E4D6C3')
+
+        for index,i in enumerate(book_data):
+            tag = 'evenrow' if index % 2 == 0 else 'oddrow'
+            self.book_tree.insert('', 'end', values=i, tags=(tag,))
 
 
     def issued_book_data(self):
@@ -149,8 +154,12 @@ class Start_app:
 
         issued_data = database.get_issued_books()
 
-        for i in issued_data:
-            self.issued_tree.insert('','end', values=i)
+        self.issued_tree.tag_configure('oddrow', background='#DDD0BE')
+        self.issued_tree.tag_configure('evenrow', background='#E4D6C3')
+
+        for index, i in enumerate(issued_data):
+            tag = 'evenrow' if index % 2 == 0 else 'oddrow'
+            self.issued_tree.insert('','end', values=i, tags=(tag,))
 
     def tree_styling(self):
 
