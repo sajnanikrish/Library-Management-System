@@ -322,7 +322,7 @@ def issue_book(book_id,stud_name,stud_enrol, book_name, book_author,iss_date,iss
         due_date = current_date + timedelta(days = int(iss_days))
 
         cur.execute("INSERT INTO issued_books (book_id,stud_name,stud_enrol, book_name, book_author,iss_date,iss_days, due_date) VALUES (?,?,?,?,?,?,?,?)",
-                    (book_id,stud_name,stud_enrol_int, book_name, book_author,iss_date.strftime(),iss_days,due_date)
+                    (book_id,stud_name,stud_enrol_int, book_name, book_author,iss_date,iss_days,due_date)
         )
 
         cur.execute("UPDATE books SET quant = quant - 1 WHERE book_id = ?",
@@ -423,7 +423,37 @@ def issue_history(stud_enrol,stud_name):
     if result:
         return result
     else:
-        return None
+        return None 
+    
+
+def get_current_issued_books(stud_enrol, stud_name):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("SELECT book_id FROM issued_books WHERE stud_enrol = ? AND stud_name = ?", 
+                (stud_enrol,stud_name))
+    result = cur.fetchall()
+    conn.close()
+
+    if result:
+        return result
+    else:
+        return 0
+
+
+def fine_paid_by_student(stud_name, stud_enrol):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("SELECT fine FROM issue_history WHERE stud_name = ? AND enrol = ?",
+                (stud_name, stud_enrol))
+    result = cur.fetchall()
+    conn.close()
+
+    if result:
+        return result
+    else:
+        return 0
 
 
 def calculate_fine(book_id, stud_name,stud_enroll): 

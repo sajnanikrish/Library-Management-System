@@ -154,7 +154,7 @@ class Start_app:
     def _set_books(self):
 
         self.right_frame = Frame(self.main_container)
-        self.right_frame.pack(side='right', fill='both', expand=True, padx=50, pady=43)
+        self.right_frame.pack(side='right', fill='both', expand=True, padx=50, pady=54)
 
         self.books_table = Frame(self.right_frame, bg= "#E4D6C3", width= 1200, highlightbackground='#1B263B', highlightthickness=0.5)
         self.profile_frame = Frame(self.right_frame, bg='#E4D6C3')
@@ -196,36 +196,54 @@ class Start_app:
         self.books_table.tkraise()
 
     def _build_profile_page(self):
-        self.upper_frame = Frame(self.profile_frame, bg="#1B263B", height=200)
-        self.upper_frame.pack(fill='x')
-        self.upper_frame.pack_propagate(False)
 
-        name_label = Label(self.upper_frame, text=f"Student Name           : {self.user_name.title()}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+
+        upper_frame = Frame(self.profile_frame, height=400)
+        upper_frame.pack(fill='both', side='top', expand=True)
+        upper_frame.pack_propagate(False)
+
+        lower_frame = Frame(self.profile_frame, bg= '#E4D6C3', height=200, highlightbackground='#1B263B', highlightthickness=1)
+        lower_frame.pack(fill='x', pady=15)
+        lower_frame.pack_propagate(False)
+
+        left_frame = Frame(upper_frame, bg='#045640', width=500)
+        left_frame.pack(side='left',fill='y')
+        left_frame.pack_propagate(False)
+
+        upper_left_frame = Frame(left_frame, bg= '#1B263B', height=200)
+        upper_left_frame.pack(side='top', fill='x')
+        upper_left_frame.pack_propagate(False)
+
+
+        upper_right_frame = Frame(upper_frame, bg="#9baf17",width=500)
+        upper_right_frame.pack(side='right', fill='both')
+        
+
+        name_label = Label(upper_left_frame, text=f"Student Name           : {self.user_name.title()}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
         name_label.grid(row=0, column=0 , sticky='w', padx=10, pady= 5)
 
-        enrol_label = Label(self.upper_frame, text=f"Student Enrollment  : {self.enrollment}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        enrol_label = Label(upper_left_frame, text=f"Student Enrollment  : {self.enrollment}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
         enrol_label.grid(row=1, column=0 , sticky='w', padx=10)
 
-        id_label = Label(self.upper_frame, text= f"Membership ID         : LIB-{self.user_id}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        id_label = Label(upper_left_frame, text= f"Membership ID         : LIB-{self.user_id}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
         id_label.grid(row=2, column=0 , sticky='w', padx=10, pady= 3) 
 
-        self.lower_frame = Frame(self.profile_frame, bg="#E4D6C3", height=200)
-        self.lower_frame.pack(fill='x', pady=75)
-        self.lower_frame.pack_propagate(False)
+        
 
-        issue_header = Frame(self.lower_frame, bg='#1B263B', height=25)
+        issue_header = Frame(lower_frame, bg='#1B263B', height=25)
         issue_header.pack(side='top', fill='x')
         issue_header.pack_propagate(False)
 
         issue_label = Label(issue_header, text='Your Book Issue History', bg='#1B263B', fg='#E4D6C3',font=('Arial', 14, 'bold'), anchor='center')
         issue_label.pack()
 
-        history_scroll = Scrollbar(self.lower_frame, orient='vertical')
+
+        history_scroll = Scrollbar(lower_frame, orient='vertical')
         history_scroll.pack(side='right', fill='y')
 
 
-        self.history_data = ttk.Treeview(self.lower_frame, columns=("Book ID", "Book Name", "Book Author", "Issue Date", "Return Date", "Fine"),
-                                         show='headings', height=5, style='Treeview')
+        self.history_data = ttk.Treeview(lower_frame, columns=("Book ID", "Book Name", "Book Author", "Issue Date", "Return Date", "Fine"),
+                                         show='headings', style='Treeview')
         
         self.history_data.heading('Book ID', text='Book ID', anchor='center')
         self.history_data.heading('Book Name', text='Book Title', anchor='w')
@@ -233,23 +251,25 @@ class Start_app:
         self.history_data.heading('Issue Date', text= 'Issued Date', anchor='w')
         self.history_data.heading('Return Date', text='Return Date', anchor='w')
         self.history_data.heading('Fine', text='Fine Amount', anchor='w')
-        self.history_data.column('Book ID', width=50)
-        self.history_data.column('Book Name', width=220)
-        self.history_data.column('Book Author', width=220)
-        self.history_data.column('Issue Date', width=100)
-        self.history_data.column('Return Date', width=100)
-        self.history_data.column('Fine', width=150)
+        self.history_data.column('Book ID', width=50, stretch=True)
+        self.history_data.column('Book Name', width=220, stretch=True)
+        self.history_data.column('Book Author', width=220, stretch=True)
+        self.history_data.column('Issue Date', width=100, stretch=True)
+        self.history_data.column('Return Date', width=100, stretch=True)
+        self.history_data.column('Fine', width=150, stretch=True)
 
-        self.history_data.pack(fill='both', expand=True)
+        self.history_data.pack(side='left', fill='both', expand=True)
         self.history_data.configure(yscrollcommand=history_scroll.set)
         history_scroll.config(command=self.history_data.yview)
+
 
         book_history = database.issue_history(self.enrollment, self.user_name)
         
 
-        if book_history is None:
+        if book_history is None or not book_history:
             self.history_data.insert('', 'end', values = ('','','No Books Issued','','',''))
             self.history_data.config(selectmode='none')
+            self.history_data.bind("<Button-1>", lambda e: "break")
 
         else:
 
@@ -259,7 +279,33 @@ class Start_app:
             for index,i in enumerate(book_history):
                 tag = 'evenrow' if index % 2 == 0 else 'oddrow'
                 self.history_data.insert('', 'end', values=i, tags=(tag,))
-                
+
+        lower_left_frame = Frame(left_frame, bg='#1B263B', height=280)  
+        lower_left_frame.pack(fill='x', pady=70)
+        lower_left_frame.pack_propagate(False)
+
+        current_books = database.get_current_issued_books(self.enrollment, self.user_name)
+        available_slots = 3-(len(current_books[0]))
+
+        total_fine = database.fine_paid_by_student(self.user_name,self.enrollment)
+        
+        books_label = Label(lower_left_frame, text= f'Current Books :-   {len(current_books[0])} / 3' ,font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        books_label.grid(row=0, column=0, sticky='w', padx=10, pady=5)
+
+        available_label = Label(lower_left_frame, text= f'Available Slots :-   {available_slots} / 3' , font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        available_label.grid(row=1, column=0, sticky='w', padx=10, pady=5)
+
+        total_books = Label(lower_left_frame, text= f'Total Books Issued :-   {len(book_history)}' ,font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        total_books.grid(row=2, column=0, sticky='w', padx=10, pady=5)
+
+        due_label = Label(lower_left_frame, text='Next Due :  ', font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        due_label.grid(row=3, column=0, sticky='w', padx=10, pady=5) 
+         
+
+        fine_label = Label(lower_left_frame, text= f'Total Fine Paid :-  {sum(total_fine[0])} Rs.', font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
+        fine_label.grid(row=3, column=0, sticky='w', padx=10, pady=5)
+
+
 
     def _insert_book_data(self):
         self.book_tree = ttk.Treeview(self.avail_books, columns=("Book ID", "Book Title", "Book Author", "Quantity"), 
