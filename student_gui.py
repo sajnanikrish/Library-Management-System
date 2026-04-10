@@ -1,5 +1,6 @@
 from tkinter import *
-from tkinter import ttk, messagebox 
+from tkinter import ttk
+from datetime import datetime
 import database, admin_gui
 
 
@@ -11,10 +12,11 @@ class Start_app:
 
         self.window = Toplevel(parent)
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
+        
 
         self.window.title('Library Management System')
         self.window.config(bg= "#E4D6C3")
-        self.window.minsize(1500,750)
+        self.window.minsize(1500,800)
 
         self._set_header()
         self._set_buttons()
@@ -198,15 +200,15 @@ class Start_app:
     def _build_profile_page(self):
 
 
-        upper_frame = Frame(self.profile_frame, height=400)
+        upper_frame = Frame(self.profile_frame, height=250, bg='#E4D6C3')
         upper_frame.pack(fill='both', side='top', expand=True)
         upper_frame.pack_propagate(False)
 
-        lower_frame = Frame(self.profile_frame, bg= '#E4D6C3', height=200, highlightbackground='#1B263B', highlightthickness=1)
-        lower_frame.pack(fill='x', pady=15)
+        lower_frame = Frame(self.profile_frame, bg= '#E4D6C3', height=275 ,highlightbackground='#1B263B', highlightthickness=1)
+        lower_frame.pack(fill='x', pady=30)
         lower_frame.pack_propagate(False)
 
-        left_frame = Frame(upper_frame, bg='#045640', width=500)
+        left_frame = Frame(upper_frame, bg='#E4D6C3', width=500)
         left_frame.pack(side='left',fill='y')
         left_frame.pack_propagate(False)
 
@@ -214,10 +216,6 @@ class Start_app:
         upper_left_frame.pack(side='top', fill='x')
         upper_left_frame.pack_propagate(False)
 
-
-        upper_right_frame = Frame(upper_frame, bg="#9baf17",width=500)
-        upper_right_frame.pack(side='right', fill='both')
-        
 
         name_label = Label(upper_left_frame, text=f"Student Name           : {self.user_name.title()}", font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
         name_label.grid(row=0, column=0 , sticky='w', padx=10, pady= 5)
@@ -266,7 +264,7 @@ class Start_app:
         book_history = database.issue_history(self.enrollment, self.user_name)
         
 
-        if book_history is None or not book_history:
+        if not book_history:
             self.history_data.insert('', 'end', values = ('','','No Books Issued','','',''))
             self.history_data.config(selectmode='none')
             self.history_data.bind("<Button-1>", lambda e: "break")
@@ -280,32 +278,113 @@ class Start_app:
                 tag = 'evenrow' if index % 2 == 0 else 'oddrow'
                 self.history_data.insert('', 'end', values=i, tags=(tag,))
 
-        lower_left_frame = Frame(left_frame, bg='#1B263B', height=280)  
-        lower_left_frame.pack(fill='x', pady=70)
+        lower_left_frame = Frame(left_frame, bg='#E4D6C3', height=380, highlightbackground='#1B263B', highlightthickness=1)  
+        lower_left_frame.pack(fill='x', side='bottom')
         lower_left_frame.pack_propagate(False)
 
-        current_books = database.get_current_issued_books(self.enrollment, self.user_name)
-        available_slots = 3-(len(current_books[0]))
-
+        data = database.get_current_issued_books(self.enrollment, self.user_name)
         total_fine = database.fine_paid_by_student(self.user_name,self.enrollment)
+
+        if data != 0:
+            current_books = [i[0] for i in data]
+            available_slots = 3-(len(current_books))
+            
+
+            today = datetime.today().date()
+
+            future_books = []
+
+            for i in data:
+                try:
+                    due_date = datetime.strptime(i[1], "%Y-%m-%d").date()
+
+                    if due_date >= today:
+                        future_books.append((i[0], due_date))  # (book_id, date)
+
+                except:
+                    continue  # skip invalid dates
+
+            if future_books:
+                book_id, closest_date_obj = min(future_books, key=lambda x: x[1])
+                closest_date = closest_date_obj.strftime("%Y-%m-%d")
+            else:
+                book_id = None
+                closest_date = None
+
+            # closest_date = (min((datetime.strptime(i[1], "%Y-%m-%d") for i in data if datetime.strptime(i[1], '%Y-%m-%d') >= today),
+            #                 default=None))
+            # if closest_date is not None:
+            #     closest_date = closest_date.strftime("%Y-%m-%d")
+            #     book_id = next((i[0] for i in data if i[1] == closest_date), None)
+            print(book_id)
+            print(closest_date)
+
+
+            books_label = Label(lower_left_frame, text= f'Current Books :-   {len(current_books)} / 3' ,font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            books_label.grid(row=0, column=0, sticky='w', padx=10, pady=2)
+
+            available_label = Label(lower_left_frame, text= f'Available Slots :-   {available_slots} / 3' , font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            available_label.grid(row=1, column=0, sticky='w', padx=10, pady=2)
+
+            total_books = Label(lower_left_frame, text= f'Total Books Issued :-   {len(book_history)}' ,font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            total_books.grid(row=2, column=0, sticky='w', padx=10, pady=2)
+
+            if total_fine == 0:
+                fine_label = Label(lower_left_frame, text= f'Total Fine Paid :-  0 Rs.', font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+                fine_label.grid(row=3, column=0, sticky='w', padx=10, pady=2) 
+
+            else:
+
+                fine_label = Label(lower_left_frame, text= f'Total Fine Paid :-  {sum(total_fine[0])} Rs.', font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+                fine_label.grid(row=3, column=0, sticky='w', padx=10, pady=2) 
+
+            if closest_date is None:
+                due_label = Label(lower_left_frame, text='No Due Date is Near', font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            else:
+                due_label = Label(lower_left_frame, text=f'Next Due Date : {closest_date} for Book ID : {book_id}', font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            due_label.grid(row=4, column=0, sticky='w', padx=10, pady=2)
+
+        else:
+
+            books_label = Label(lower_left_frame, text= f'Current Books :-   0 / 3' ,font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            books_label.grid(row=0, column=0, sticky='w', padx=10, pady=5)
+
+            available_label = Label(lower_left_frame, text= f'Available Slots :-   3 / 3' , font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            available_label.grid(row=1, column=0, sticky='w', padx=10, pady=5)
+
+            total_books = Label(lower_left_frame, text= f'Total Books Issued :-   0' ,font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            total_books.grid(row=2, column=0, sticky='w', padx=10, pady=5)
+
+
+            if total_fine == 0:
+                fine_label = Label(lower_left_frame, text= f'Total Fine Paid :-  0 Rs.', font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+                fine_label.grid(row=3, column=0, sticky='w', padx=10, pady=5) 
+            else:
+                fine_label = Label(lower_left_frame, text= f'Total Fine Paid :-  {sum(total_fine[0])} Rs.', font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
+                fine_label.grid(row=3, column=0, sticky='w', padx=10, pady=2) 
         
-        books_label = Label(lower_left_frame, text= f'Current Books :-   {len(current_books[0])} / 3' ,font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
-        books_label.grid(row=0, column=0, sticky='w', padx=10, pady=5)
 
-        available_label = Label(lower_left_frame, text= f'Available Slots :-   {available_slots} / 3' , font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
-        available_label.grid(row=1, column=0, sticky='w', padx=10, pady=5)
+        upper_right_frame = Frame(upper_frame, bg="#E4D6C3",width=500, highlightbackground='#1B263B', highlightthickness=1)
+        upper_right_frame.pack(side='right', fill='both')
+        # upper_right_frame.pack_propagate(False)
+        upper_right_frame.grid_propagate(False)
 
-        total_books = Label(lower_left_frame, text= f'Total Books Issued :-   {len(book_history)}' ,font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
-        total_books.grid(row=2, column=0, sticky='w', padx=10, pady=5)
+        recents = database.recent_activities(self.enrollment,self.user_name)
 
-        due_label = Label(lower_left_frame, text='Next Due :  ', font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
-        due_label.grid(row=3, column=0, sticky='w', padx=10, pady=5) 
-         
+        recent_label = Label(upper_right_frame, text='Recent Activities', font=('Arial', 26, 'bold'), fg='#1B263B', bg='#E4D6C3')
+        recent_label.grid(row=0, column=0, pady=15, padx=110)
 
-        fine_label = Label(lower_left_frame, text= f'Total Fine Paid :-  {sum(total_fine[0])} Rs.', font=('Arial', 14, 'bold'), bg='#1B263B', fg='#f7e1d7')
-        fine_label.grid(row=3, column=0, sticky='w', padx=10, pady=5)
+        if recents == None:
+            labels = Label(upper_right_frame, text = f"No Recent Activities" , font = ('Arial', 15, 'bold'), fg='#1B263B', bg='#E4D6C3')
+            labels.grid(row=1, column=0, padx=7, pady=10,)
 
-
+        else:
+            row_num = 1
+            for i in recents:
+                labels = Label(upper_right_frame, text = f"● {i}" , font = ('Arial', 12, 'bold'), fg='#1B263B', bg='#E4D6C3')
+                labels.grid(row=row_num, column=0, padx=7, pady=10, sticky='w')
+                row_num+=1
+        
 
     def _insert_book_data(self):
         self.book_tree = ttk.Treeview(self.avail_books, columns=("Book ID", "Book Title", "Book Author", "Quantity"), 

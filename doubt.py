@@ -1429,3 +1429,13 @@
 # frame1.tkraise()
 
 # root.mainloop()
+
+# import database
+
+# data = database.get_current_issued_books(240170117059,'KRISH GURMUKHDAS SAJNANI')
+
+# data.append((2,"2026-04-25"))
+# # print(data)
+
+# a = [i[1] for i in data ]
+# print(a)

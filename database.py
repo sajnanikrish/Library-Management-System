@@ -1,7 +1,7 @@
 import sqlite3
 import re, os, qrcode
 from PIL import Image, ImageDraw, ImageFont
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 # from tkcalendar import DateEntry
 
 DB_NAME = "library.db"
@@ -32,7 +32,6 @@ def create_tables():
                 due_date TEXT
                 )""")
     
-    # cur.execute("DROP TABLE issued_books")
     
     cur.execute("""CREATE TABLE IF NOT EXISTS user_data (
                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,13 +52,10 @@ def create_tables():
                 fine INTEGER
                 )""")
     
-    # cur.execute("Select * from issue_history")
-    # result = cur.fetchall()
-    # print(result)
+    # cur.execute("DROP TABLE issue_history")
+    
     conn.commit()
     conn.close()
-    
-
 
 def add_user(user_name, enrollment, password, role):
     conn = connect()
@@ -420,17 +416,14 @@ def issue_history(stud_enrol,stud_name):
     result = cur.fetchall()
     conn.close()
 
-    if result:
-        return result
-    else:
-        return None 
+    return result or []
     
 
 def get_current_issued_books(stud_enrol, stud_name):
     conn = connect()
     cur = conn.cursor()
 
-    cur.execute("SELECT book_id FROM issued_books WHERE stud_enrol = ? AND stud_name = ?", 
+    cur.execute("SELECT book_id,due_date FROM issued_books WHERE stud_enrol = ? AND stud_name = ?", 
                 (stud_enrol,stud_name))
     result = cur.fetchall()
     conn.close()
@@ -479,7 +472,18 @@ def calculate_fine(book_id, stud_name,stud_enroll):
             return False
         
     else:
-        return None
+        return None 
+
+def books_issued_in_history(stud_enrol, stud_name):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("SELECT enrol,stud_name,book_name, book_author, issue_date, return_date FROM issue_history WHERE enrol = ? AND stud_name = ?", 
+                (stud_enrol, stud_name))
+    result = cur.fetchall()
+
+    return result or []
+
 
 
 def student_book_issued(enrollment):
@@ -490,11 +494,59 @@ def student_book_issued(enrollment):
                 (enrollment, ))
     result = cur.fetchall()
 
-    if result:
-        return result
-    else:
-        conn.close()
+    return result or []
+
+def recent_activities(stud_enrol, stud_name):
+    
+    activities = []
+    issued = student_book_issued(stud_enrol)
+    issued_history = books_issued_in_history(stud_enrol,stud_name)
+    history = issue_history(stud_enrol,stud_name)
+    # print(history)
+    # print(issued)
+
+    if issued_history:
+        issued.extend(issued_history)
+        # print(issued)
+    
+   
+    for i in issued:
+        book_name = i[2]
+        issue_date = i[4]
+
+        activities.append((issue_date,f"Issued '{book_name}'"))
+
+    for i in history:
+        book_name = i[1]
+        return_date = i[4]
+        fine = i[-1]
+
+        activities.append((return_date, f"Returned '{book_name}'"))
+
+        if fine and fine > 0:
+            activities.append((return_date, f"Fine Rs.{fine} for {book_name}"))
+
+    def parse_date(d):
+        try:
+            return datetime.strptime(d, "%d-%m-%Y")
+        except:
+            try:
+                return datetime.fromisoformat(d)
+            except:
+                return datetime.min
+
+    if not activities:
         return None
+
+    activities.sort(key=lambda x: parse_date(x[0]), reverse=True)
+    # print(activities)
+    recent = activities[:5]
+    recents = [i[1] for i in recent]
+    
+    return recents
+    
+
+# recent_activities(240170117059, "KRISH GURMUKHDAS SAJNANI")
 
 
 def search_book(value):
@@ -518,3 +570,8 @@ def search_book(value):
     
 
 
+# def get_return_dates(stud_enrol,stud_name):
+#     conn = connect()
+#     cur = conn.cursor()
+
+#     cur.execute("SELECT return_date FROM ")
