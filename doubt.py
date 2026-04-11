@@ -1439,3 +1439,38 @@
 
 # a = [i[1] for i in data ]
 # print(a)
+
+import tkinter as tk
+
+root = tk.Tk()
+root.geometry("500x400")
+
+# Top bar
+topbar = tk.Frame(root, bg="lightblue", height=50)
+topbar.pack(fill="x")
+
+# Menu frame (hidden initially)
+menu_frame = tk.Frame(root, bg="lightgray", width=150)
+
+menu_visible = False
+
+def toggle_menu():
+    global menu_visible
+    if menu_visible:
+        menu_frame.pack_forget()   # hide menu
+        menu_visible = False
+    else:
+        menu_frame.pack(side="left", fill="y")
+        menu_visible = True
+
+# Hamburger button
+menu_button = tk.Button(topbar, text="☰", font=("Arial", 16), command=toggle_menu)
+menu_button.pack(side="left", padx=10, pady=5)
+
+# Menu options
+tk.Button(menu_frame, text="Dashboard").pack(fill="x", pady=5)
+tk.Button(menu_frame, text="Add Book").pack(fill="x", pady=5)
+tk.Button(menu_frame, text="Issue Book").pack(fill="x", pady=5)
+tk.Button(menu_frame, text="Return Book").pack(fill="x", pady=5)
+
+root.mainloop()

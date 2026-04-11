@@ -51,6 +51,13 @@ def create_tables():
                 return_date TEXT,
                 fine INTEGER
                 )""")
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS book_requests(
+                book_name TEXT NOT NULL,
+                book_author TEXT NOT NULL,
+                stud_name TEXT NOT NULL,
+                stud_enrol TEXT NOT NULL
+                )""")
     
     # cur.execute("DROP TABLE issue_history")
     
@@ -109,7 +116,6 @@ def add_admin(user_name, password, role):
 
 def get_admin(admin_name, role):
 
-    
     conn = connect()
     cur = conn.cursor()
 
@@ -485,7 +491,6 @@ def books_issued_in_history(stud_enrol, stud_name):
     return result or []
 
 
-
 def student_book_issued(enrollment):
     conn = connect()
     cur = conn.cursor()
@@ -566,12 +571,21 @@ def search_book(value):
         return None 
     
 
-# search_book('The')
+def request_book(stud_name,stud_enrol,book_name,book_author):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("""INSERT INTO book_requests (stud_name,stud_enrol,book_name,book_author) VALUES (?,?,?,?)""",
+                (stud_name,stud_enrol,book_name,book_author))
     
+    conn.commit()
+    conn.close()
 
-
-# def get_return_dates(stud_enrol,stud_name):
+# def see_book_requests():
 #     conn = connect()
 #     cur = conn.cursor()
 
-#     cur.execute("SELECT return_date FROM ")
+#     cur.execute("SELECT * FROM book_requests")
+#     result = cur.fetchall()
+
+#     return result or []

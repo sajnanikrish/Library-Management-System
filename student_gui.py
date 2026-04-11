@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk,messagebox
 from datetime import datetime
 import database, admin_gui
 
@@ -47,55 +47,40 @@ class Start_app:
         self.main_container = Frame(self.window, bg="#E4D6C3")
         self.main_container.pack(fill='both', expand=True)
 
-        button_frame = Frame(self.main_container, bg="#E4D6C3", width= 220)
-        button_frame.pack(fill='y', side='left', padx= 75, pady= 30)
-        button_frame.propagate(FALSE)
+        left_frame = Frame(self.main_container, bg="#E4D6C3", width= 280)
+        left_frame.pack(fill='y', side='left')
+        left_frame.propagate(FALSE)
+
+        menu_frame = Frame(left_frame, bg="#1B263B", width=280)
+        self.menu_visible = False
+
+        def toggle_menu():
+            # global menu_visible
+            if self.menu_visible:
+                menu_frame.pack_forget()   # hide menu
+                self.menu_visible = False
+            else:
+                menu_frame.pack(side="left", fill="y", pady=5)
+                self.menu_visible = True
+
+
+        menu_button = Button(left_frame, text="☰", font=("Arial", 14), command=toggle_menu)
+        menu_button.pack(side='top', padx=7, pady=10, anchor='w')
 
         buttons_config = [
-            ('Home', "#71570A" , self._home_page),
-            ('My Profile', "#045640", self._my_profile),
-            ('Search Book', "#7b1206", self._search_book),
-            ('Request Book', "#900d71", self._request_book),
-            ('Logout', "#0b3583", self.on_close)
+            ('Home', self._home_page),
+            ('My Profile', self._my_profile),
+            ('Search Book', self._search_book),
+            ('Logout', self.on_close)
         ]
 
-        for i, (text, color, func) in enumerate(buttons_config):
-            btn = Button(button_frame, text=text, bg=color, fg='#E4D6C3', height=2, width=20, command=func,
-                        activebackground='#1B263B', cursor='hand2', font=('Arial', 19, 'bold'))
-            btn.pack(padx=12, pady=25)
-
-    def _request_book(self):
-        dialog = Toplevel(self.window)
-        dialog.geometry('400x350')
-        admin_gui.Start_app._center_dialog(self.window, dialog)
-        dialog.title('Request Book')
-        dialog.config(bg='#f7e1d7')
-        dialog.transient(self.window)
-        dialog.grab_set()
+        for i, (text, func) in enumerate(buttons_config):
+            btn = Button(menu_frame, text=text, bg='#1B263B', fg='#E4D6C3', height=1, width=15, command=func,
+                        activebackground="#0555E8", activeforeground='white', cursor='hand2', font=('Arial', 16, 'bold'), anchor='w', bd=0, highlightthickness=0, relief='flat')
+            btn.pack(padx=10, pady=8)
 
 
-        heading_label = Label(dialog, text='Request Book', font=('Arial', 21, 'bold'), bg='#f7e1d7', fg='#370617')
-        heading_label.grid(row=0, column=0, padx=100, pady=10)
-
-        title_label = Label(dialog, text='Enter Book Title : ', font=('Arial', 16, 'bold'),  bg='#f7e1d7', fg='#1B263B')
-        title_label.grid(row=1, column=0, pady=10, padx=6, sticky='w')
-
-        self.title_entry = Entry(dialog, font=('Arial', 12, 'bold'),width=42, bg='#d5bdaf', fg='black')
-        self.title_entry.grid(row=2, column=0, sticky='w', padx=10, pady=8)
-        admin_gui.Start_app.add_placeholder(self.window, self.title_entry, 'Enter Book Name')
-
-        author_label = Label(dialog, text='Enter Book Author : ', font=('Arial', 16, 'bold'),  bg='#f7e1d7', fg='#1B263B')
-        author_label.grid(row=3, column=0, pady=10, padx=6, sticky='w')
-
-        self.author_entry = Entry(dialog, font=('Arial', 12, 'bold'),width=42, bg='#d5bdaf', fg='black')
-        self.author_entry.grid(row=4, column=0, sticky='w', padx=10, pady=8)
-        admin_gui.Start_app.add_placeholder(self.window, self.author_entry, 'Enter Author Name')
-
-        request_btn = Button(dialog, text='Send Request', font=('Arial', 15, 'bold'), padx=2, pady=2, fg='#f7e1d7', bg='#1B263B', activebackground='#1B263B')
-        request_btn.grid(row=5, column=0, pady=20, padx=60)
-
-
-
+    
     def _search_book(self):
         dialog = Toplevel(self.window)
         dialog.geometry('420x450')
@@ -151,12 +136,11 @@ class Start_app:
     def _my_profile(self):
         self.profile_frame.tkraise()
 
-    def _fine_details(self):
-        pass
+
     def _set_books(self):
 
         self.right_frame = Frame(self.main_container)
-        self.right_frame.pack(side='right', fill='both', expand=True, padx=50, pady=54)
+        self.right_frame.pack(side='right', fill='both', expand=True, padx=50, pady=68)
 
         self.books_table = Frame(self.right_frame, bg= "#E4D6C3", width= 1200, highlightbackground='#1B263B', highlightthickness=0.5)
         self.profile_frame = Frame(self.right_frame, bg='#E4D6C3')

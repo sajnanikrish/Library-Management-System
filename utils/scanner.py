@@ -2,8 +2,6 @@ from tkinter import *
 import cv2
 
 
-
-
 def scan_student():
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     detector = cv2.QRCodeDetector()

@@ -1,5 +1,5 @@
 from tkinter import *
-import database, admin_gui
+import database
 from tkinter import messagebox
 import re
 
@@ -14,7 +14,6 @@ class AddBookDialog:
         self.dialog = Toplevel(self.parent)
         self.dialog.geometry('428x400')
         self.admin._center_dialog(self.dialog)
-        # admin_gui.Start_app._center_dialog(self.parent, self.dialog) 
         self.dialog.title('Add New Book')
         self.dialog.config(bg='#f7e1d7')
         self.dialog.transient(self.parent)         # keeps the dialogbox a child of root window, if root is minimized then self.dialog also minmizes

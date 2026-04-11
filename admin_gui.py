@@ -41,33 +41,45 @@ class Start_app:
         self.main_container = Frame(self.window, bg="#E4D6C3")
         self.main_container.pack(fill='both', expand=True)
 
-        # Left frame for buttons
-        button_frame = Frame(self.main_container, bg= "#E4D6C3", width=220)
-        button_frame.pack(fill='y', side='left', padx= 75, pady= 25)
-        button_frame.propagate(FALSE)
+        left_frame = Frame(self.main_container, bg="#E4D6C3", width= 280)
+        left_frame.pack(fill='y', side='left')
+        left_frame.propagate(FALSE)
 
-        button_header = Label(button_frame, text='Operations', font=('Arial', 22, 'bold'), bg='#E4D6C3',fg= '#1B263B')
-        button_header.pack(pady=14)
+        menu_frame = Frame(left_frame, bg="#1B263B")
+        self.menu_visible = False
 
-        button_config = [
-            ("Add Book", "#6f4518", self.open_add_book_dialog),
-            ('Add Quantity', "#335c67", self.open_add_quantity_dialog),
-            ('Remove Quantity', "#800f2f", self.open_rmv_quantity_dialog),
-            ('Issue Book', "#3a5a40", self.open_issue_book_dialog),
-            ('Return Book', "#c16200", self.open_return_book_dialog)
+        def toggle_menu():
+            # global menu_visible
+            if self.menu_visible:
+                menu_frame.pack_forget()   # hide menu
+                self.menu_visible = False
+            else:
+                menu_frame.pack(side="left", fill="both", pady=4)
+                self.menu_visible = True
+
+
+        menu_button = Button(left_frame, text="☰", font=("Arial", 14), command=toggle_menu)
+        menu_button.pack(side='top', padx=7, pady=10, anchor='w')
+
+        
+        buttons_config = [
+            ("Add Book",self.open_add_book_dialog),
+            ('Add Quantity',self.open_add_quantity_dialog),
+            ('Remove Quantity',self.open_rmv_quantity_dialog),
+            ('Issue Book', self.open_issue_book_dialog),
+            ('Return Book', self.open_return_book_dialog),
+            ('Log Out', self.on_close)
         ]
-
-
-        for i, (text, color, func) in enumerate(button_config):
-            btn = Button(button_frame, text=text, bg= color, command=func, fg= '#E4D6C3', height=3, width=20, 
-                        activebackground='#1B263B', cursor='hand2', font=("Arial", 16, 'bold'))
-            btn.pack(padx=12, pady=12)
+        for i, (text, func) in enumerate(buttons_config):
+            btn = Button(menu_frame, text=text, bg='#1B263B', fg='#E4D6C3', height=1, width=15, command=func,
+                        activebackground="#0555E8", activeforeground='white', cursor='hand2', font=('Arial', 16, 'bold'), anchor='w', bd=0, highlightthickness=0, relief='flat')
+            btn.pack(padx=10, pady=8)
 
     def set_book_containers(self):
 
         # books frame in right side
         books_table = Frame(self.main_container, bg= "#E4D6C3", width= 1200, highlightbackground='#1B263B', highlightthickness=0.5)
-        books_table.pack(side='right', fill='y', padx=50, pady=25)
+        books_table.pack(side='right', fill='y', padx=70, pady=65)
         books_table.pack_propagate(False)
 
 
@@ -238,4 +250,7 @@ class Start_app:
 
     def open_return_book_dialog(self):
         return_book_dialog.ReturnBookDialog(self)
+
+    def see_book_request(self):
+        pass
     
