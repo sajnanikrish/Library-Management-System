@@ -65,7 +65,7 @@ class Start_app:
 
 
         menu_button = Button(left_frame, text="☰", font=("Arial", 14), command=toggle_menu)
-        menu_button.pack(side='top', padx=7, pady=10, anchor='w')
+        menu_button.pack(side='top', padx=7, pady=13, anchor='w')
 
         buttons_config = [
             ('Home', self._home_page),
@@ -142,18 +142,18 @@ class Start_app:
         self.right_frame = Frame(self.main_container)
         self.right_frame.pack(side='right', fill='both', expand=True, padx=50, pady=68)
 
-        self.books_table = Frame(self.right_frame, bg= "#E4D6C3", width= 1200, highlightbackground='#1B263B', highlightthickness=0.5)
+        self.books_table = Frame(self.right_frame, bg= "#E4D6C3", width= 1200)
         self.profile_frame = Frame(self.right_frame, bg='#E4D6C3')
         
         for frame in (self.books_table, self.profile_frame):
             frame.place(relheight=1, relwidth=1)
 
         # viewing available books
-        self.avail_books = Frame(self.books_table, bg= '#E4D6C3', highlightbackground='#1B263B', highlightthickness=0.5)
-        self.avail_books.pack(side='top', fill='both', expand=True)
+        self.avail_books = Frame(self.books_table, bg= '#E4D6C3', highlightbackground='#1B263B', highlightthickness=2)
+        self.avail_books.pack(side='top', fill='both', expand=True, pady=5)
         self.avail_books.pack_propagate(False)
 
-        avail_header = Frame(self.avail_books,bg='#1B263B', height=25)
+        avail_header = Frame(self.avail_books,bg='#1B263B', height=30)
         avail_header.pack(side='top', fill='x')
         avail_header.pack_propagate(False)
 
@@ -164,11 +164,11 @@ class Start_app:
         avail_label.pack()
         avail_label.pack_propagate(False)
 
-        self.issued_books = Frame(self.books_table, bg = '#E4D6C3',highlightbackground='#1B263B', highlightthickness=0.5)
-        self.issued_books.pack(side='bottom', fill='both', expand=True)
+        self.issued_books = Frame(self.books_table, bg = '#E4D6C3',highlightbackground='#1B263B', highlightthickness= 2)
+        self.issued_books.pack(side='bottom', fill='both', expand=True, pady=15)
         self.issued_books.pack_propagate(False)
 
-        issued_header = Frame(self.issued_books,bg='#1B263B', height=25)
+        issued_header = Frame(self.issued_books,bg='#1B263B', height=30)
         issued_header.pack(side='top', fill='x')
         issued_header.pack_propagate(False)
 
@@ -192,7 +192,7 @@ class Start_app:
         lower_frame.pack(fill='x', pady=30)
         lower_frame.pack_propagate(False)
 
-        left_frame = Frame(upper_frame, bg='#E4D6C3', width=500)
+        left_frame = Frame(upper_frame, bg='#E4D6C3', width=520)
         left_frame.pack(side='left',fill='y')
         left_frame.pack_propagate(False)
 
@@ -295,15 +295,7 @@ class Start_app:
                 book_id = None
                 closest_date = None
 
-            # closest_date = (min((datetime.strptime(i[1], "%Y-%m-%d") for i in data if datetime.strptime(i[1], '%Y-%m-%d') >= today),
-            #                 default=None))
-            # if closest_date is not None:
-            #     closest_date = closest_date.strftime("%Y-%m-%d")
-            #     book_id = next((i[0] for i in data if i[1] == closest_date), None)
-            print(book_id)
-            print(closest_date)
-
-
+            
             books_label = Label(lower_left_frame, text= f'Current Books :-   {len(current_books)} / 3' ,font=('Arial', 14, 'bold'), fg='#1B263B', bg='#E4D6C3')
             books_label.grid(row=0, column=0, sticky='w', padx=10, pady=2)
 
@@ -348,7 +340,7 @@ class Start_app:
                 fine_label.grid(row=3, column=0, sticky='w', padx=10, pady=2) 
         
 
-        upper_right_frame = Frame(upper_frame, bg="#E4D6C3",width=500, highlightbackground='#1B263B', highlightthickness=1)
+        upper_right_frame = Frame(upper_frame, bg="#E4D6C3",width=520, highlightbackground='#1B263B', highlightthickness=1)
         upper_right_frame.pack(side='right', fill='both')
         # upper_right_frame.pack_propagate(False)
         upper_right_frame.grid_propagate(False)

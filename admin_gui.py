@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import database
-from dialogs import add_book_dialog, add_quantity_dialog, remv_quantity_dialog, issue_book_dialog, return_book_dialog
+from dialogs import add_book_dialog, add_quantity_dialog, remv_quantity_dialog, issue_book_dialog, return_book_dialog, issue_history_dialog
 
 class Start_app:
 
@@ -59,7 +59,7 @@ class Start_app:
 
 
         menu_button = Button(left_frame, text="☰", font=("Arial", 14), command=toggle_menu)
-        menu_button.pack(side='top', padx=7, pady=10, anchor='w')
+        menu_button.pack(side='top', padx=10, pady=12, anchor='w')
 
         
         buttons_config = [
@@ -68,6 +68,7 @@ class Start_app:
             ('Remove Quantity',self.open_rmv_quantity_dialog),
             ('Issue Book', self.open_issue_book_dialog),
             ('Return Book', self.open_return_book_dialog),
+            ('Issue History', self.view_issue_history),
             ('Log Out', self.on_close)
         ]
         for i, (text, func) in enumerate(buttons_config):
@@ -78,17 +79,17 @@ class Start_app:
     def set_book_containers(self):
 
         # books frame in right side
-        books_table = Frame(self.main_container, bg= "#E4D6C3", width= 1200, highlightbackground='#1B263B', highlightthickness=0.5)
-        books_table.pack(side='right', fill='y', padx=70, pady=65)
+        books_table = Frame(self.main_container, bg= "#E4D6C3", width= 1200)
+        books_table.pack(side='right', fill='y', padx=70, pady=45)
         books_table.pack_propagate(False)
 
 
         # viewing available books
-        self.avail_books = Frame(books_table, bg= '#E4D6C3', highlightbackground='#1B263B', highlightthickness=0.5)
-        self.avail_books.pack(side='top', fill='both', expand=True)
+        self.avail_books = Frame(books_table, bg= '#E4D6C3', highlightbackground='#1B263B', highlightthickness=2)
+        self.avail_books.pack(side='top', fill='both', expand=True, pady=20)
         self.avail_books.pack_propagate(False)
 
-        avail_header = Frame(self.avail_books,bg='#1B263B', height=20)
+        avail_header = Frame(self.avail_books,bg='#1B263B', height=30)
         avail_header.pack(side='top', fill='x')
         avail_header.pack_propagate(False)
 
@@ -99,11 +100,11 @@ class Start_app:
         avail_label.pack()
         avail_label.pack_propagate(False)
 
-        self.issued_books = Frame(books_table, bg = '#E4D6C3',highlightbackground='#1B263B', highlightthickness=0.5)
-        self.issued_books.pack(side='bottom', fill='both', expand=True)
+        self.issued_books = Frame(books_table, bg = '#E4D6C3',highlightbackground='#1B263B', highlightthickness=2)
+        self.issued_books.pack(side='bottom', fill='both', expand=True, pady=15)
         self.issued_books.pack_propagate(False)
 
-        issued_header = Frame(self.issued_books,bg='#1B263B', height=20)
+        issued_header = Frame(self.issued_books,bg='#1B263B', height=30)
         issued_header.pack(side='top', fill='x')
         issued_header.pack_propagate(False)
 
@@ -251,6 +252,6 @@ class Start_app:
     def open_return_book_dialog(self):
         return_book_dialog.ReturnBookDialog(self)
 
-    def see_book_request(self):
-        pass
+    def view_issue_history(self):
+        issue_history_dialog.ViewIssueHistory(self)
     

@@ -21,7 +21,7 @@ class AddBookDialog:
 
 
         book_label = Label  (self.dialog, text='Add New Book', font=('Arial', 21, 'bold'), bg='#f7e1d7', fg='#370617')
-        book_label.grid( pady=12)
+        book_label.grid(row=0, column=0, pady=12)
 
         title_label = Label (self.dialog, text='Title : ', font=('Arial', 18, 'bold'), bg='#f7e1d7', fg='#1B263B')
         title_label.grid(row=1, column=0, padx=10, pady=12, sticky='w')
