@@ -2,6 +2,7 @@ import sqlite3
 import re, os, qrcode
 from PIL import Image, ImageDraw, ImageFont
 from datetime import date, timedelta, datetime
+from collections import Counter
 # from tkcalendar import DateEntry
 
 DB_NAME = "library.db"
@@ -568,3 +569,35 @@ def book_issue_history():
     conn.close()
 
     return result or []
+
+def get_book_title(book_id):
+    conn = connect()
+    cur = conn.cursor()
+
+    cur.execute("SELECT title FROM books WHERE book_id = ?",
+                (book_id,))
+    result = cur.fetchone()
+
+    return result[0]
+
+def get_popular_books():
+
+    data = book_issue_history()
+    # print(data)
+
+    book_ids = [i[0] for i in data]
+    # print(book_ids)
+
+    counts = Counter(book_ids)
+
+    book_list = [
+        (book_id, (count, get_book_title(book_id)))
+        for book_id, count in counts.items()
+    ]
+
+    sorted_books = sorted(book_list, key=lambda x : x[1][0], reverse=True)
+    # top5 = sorted_books[:5]
+
+    return sorted_books
+
+

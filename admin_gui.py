@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
-import database
-from dialogs import add_book_dialog, add_quantity_dialog, remv_quantity_dialog, issue_book_dialog, return_book_dialog, issue_history_dialog
+import database, dashboard
+from dialogs import add_book_dialog, add_quantity_dialog, remv_quantity_dialog, issue_book_dialog, return_book_dialog, issue_history_dialog, search_book_dialog
 
 class Start_app:
 
@@ -63,9 +63,12 @@ class Start_app:
 
         
         buttons_config = [
+            ('Home', self.home_page),
+            ('Dashboard', self.open_dashboard),
             ("Add Book",self.open_add_book_dialog),
             ('Add Quantity',self.open_add_quantity_dialog),
             ('Remove Quantity',self.open_rmv_quantity_dialog),
+            ('Search Book', self.search_book_dialog),
             ('Issue Book', self.open_issue_book_dialog),
             ('Return Book', self.open_return_book_dialog),
             ('Issue History', self.view_issue_history),
@@ -78,14 +81,21 @@ class Start_app:
 
     def set_book_containers(self):
 
-        # books frame in right side
-        books_table = Frame(self.main_container, bg= "#E4D6C3", width= 1200)
-        books_table.pack(side='right', fill='y', padx=70, pady=45)
-        books_table.pack_propagate(False)
+        self.right_frame = Frame(self.main_container, bg= "#E4D6C3", width= 1200)
+        self.right_frame.pack(side='right', fill='y', padx=70, pady=45)
+        self.right_frame.pack_propagate(False)
 
+        # books frame in right side
+        self.books_table = Frame(self.right_frame, bg= "#E4D6C3", width= 1200)
+        self.dashboard_frame = Frame(self.right_frame, bg= "#E4D6C3", width= 1200)
+        # self.books_table.pack(side='right', fill='y', padx=70, pady=45)
+        # self.books_table.pack_propagate(False)
+
+        for frame in (self.books_table, self.dashboard_frame):
+            frame.place(relheight=1,relwidth=1)
 
         # viewing available books
-        self.avail_books = Frame(books_table, bg= '#E4D6C3', highlightbackground='#1B263B', highlightthickness=2)
+        self.avail_books = Frame(self.books_table, bg= '#E4D6C3', highlightbackground='#1B263B', highlightthickness=2)
         self.avail_books.pack(side='top', fill='both', expand=True, pady=20)
         self.avail_books.pack_propagate(False)
 
@@ -100,7 +110,7 @@ class Start_app:
         avail_label.pack()
         avail_label.pack_propagate(False)
 
-        self.issued_books = Frame(books_table, bg = '#E4D6C3',highlightbackground='#1B263B', highlightthickness=2)
+        self.issued_books = Frame(self.books_table, bg = '#E4D6C3',highlightbackground='#1B263B', highlightthickness=2)
         self.issued_books.pack(side='bottom', fill='both', expand=True, pady=15)
         self.issued_books.pack_propagate(False)
 
@@ -115,6 +125,8 @@ class Start_app:
         issued_label = Label(issued_header, text='Issued Books', bg='#1B263B', fg='#E4D6C3',font=('Arial', 14, 'bold'), anchor='center')
         issued_label.pack()
         issued_label.pack_propagate(False)
+
+        self.books_table.tkraise()
 
 
     def insert_book_data(self):
@@ -252,6 +264,28 @@ class Start_app:
     def open_return_book_dialog(self):
         return_book_dialog.ReturnBookDialog(self)
 
+    def search_book_dialog(self):
+        search_book_dialog.SearchBook(self)
+
     def view_issue_history(self):
         issue_history_dialog.ViewIssueHistory(self)
+
+    def home_page(self):
+        self.books_table.tkraise()
+
     
+
+    def open_dashboard(self):
+        # self.window.grid_rowconfigure(0, weight=1)
+        # self.window.grid_columnconfigure(1, weight=1)
+
+        for widget in self.dashboard_frame.winfo_children():
+            widget.destroy()
+
+        self.dashboard_frame.grid_rowconfigure(0, weight=1,uniform='row')
+        self.dashboard_frame.grid_rowconfigure(1, weight=1, uniform='row')
+        self.dashboard_frame.grid_columnconfigure(0, weight=1, uniform='col')
+        self.dashboard_frame.grid_columnconfigure(1, weight=1, uniform='col')
+
+        dashboard.Dashboard(self.dashboard_frame)
+        self.dashboard_frame.tkraise()

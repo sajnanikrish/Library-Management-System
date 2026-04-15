@@ -132,7 +132,6 @@ class Start_app:
     def _home_page(self):
         self.books_table.tkraise()
 
-
     def _my_profile(self):
         self.profile_frame.tkraise()
 
